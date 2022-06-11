@@ -20,12 +20,12 @@ RESTORING_FROM_SCRATCH="false"
 
 RESTORE_PANE_CONTENTS="false"
 
-my_log() {
+my_restore_log() {
 	echo "scripts/restore.$1" >> /tmp/resurrect.log
 }
 
 is_line_type() {
-	my_log is_line_type
+	my_restore_log is_line_type
 	local line_type="$1"
 	local line="$2"
 	echo "$line" |
@@ -33,7 +33,7 @@ is_line_type() {
 }
 
 check_saved_session_exists() {
-	my_log check_saved_session_exists
+	my_restore_log check_saved_session_exists
 	local resurrect_file="$(last_resurrect_file)"
 	if [ ! -f $resurrect_file ]; then
 		display_message "Tmux resurrect file not found!"
@@ -42,7 +42,7 @@ check_saved_session_exists() {
 }
 
 pane_exists() {
-	my_log pane_exists
+	my_restore_log pane_exists
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -51,7 +51,7 @@ pane_exists() {
 }
 
 register_existing_pane() {
-	my_log register_existing_pane
+	my_restore_log register_existing_pane
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -61,7 +61,7 @@ register_existing_pane() {
 }
 
 is_pane_registered_as_existing() {
-	my_log is_pane_registered_as_existing
+	my_restore_log is_pane_registered_as_existing
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -70,37 +70,37 @@ is_pane_registered_as_existing() {
 }
 
 restore_from_scratch_true() {
-	my_log "restore_from_scratch_true"
+	my_restore_log "restore_from_scratch_true"
 	RESTORING_FROM_SCRATCH="true"
 }
 
 is_restoring_from_scratch() {
-	my_log "is_restoring_from_scratch"
+	my_restore_log "is_restoring_from_scratch"
 	[ "$RESTORING_FROM_SCRATCH" == "true" ]
 }
 
 restore_pane_contents_true() {
-	my_log "restore_pane_contents_true"
+	my_restore_log "restore_pane_contents_true"
 	RESTORE_PANE_CONTENTS="true"
 }
 
 is_restoring_pane_contents() {
-	my_log "is_restoring_pane_contents"
+	my_restore_log "is_restoring_pane_contents"
 	[ "$RESTORE_PANE_CONTENTS" == "true" ]
 }
 
 restored_session_0_true() {
-	my_log "restored_session_0_true"
+	my_restore_log "restored_session_0_true"
 	RESTORED_SESSION_0="true"
 }
 
 has_restored_session_0() {
-	my_log "has_restored_session_0"
+	my_restore_log "has_restored_session_0"
 	[ "$RESTORED_SESSION_0" == "true" ]
 }
 
 window_exists() {
-	my_log "window_exists"
+	my_restore_log "window_exists"
 	local session_name="$1"
 	local window_number="$2"
 	tmux list-windows -t "$session_name" -F "#{window_index}" 2>/dev/null |
@@ -108,25 +108,25 @@ window_exists() {
 }
 
 session_exists() {
-	my_log "session_exists"
+	my_restore_log "session_exists"
 	local session_name="$1"
 	tmux has-session -t "$session_name" 2>/dev/null
 }
 
 first_window_num() {
-	my_log "first_window_num"
+	my_restore_log "first_window_num"
 	tmux show -gv base-index
 }
 
 tmux_socket() {
-	my_log "tmux_socket"
+	my_restore_log "tmux_socket"
 	echo $TMUX | cut -d',' -f1
 }
 
 # Tmux option stored in a global variable so that we don't have to "ask"
 # tmux server each time.
 cache_tmux_default_command() {
-	my_log "cache_tmux_default_command"
+	my_restore_log "cache_tmux_default_command"
 	local default_shell="$(get_tmux_option "default-shell" "")"
 	local opt=""
 	if [ "$(basename "$default_shell")" == "bash" ]; then
@@ -136,17 +136,17 @@ cache_tmux_default_command() {
 }
 
 tmux_default_command() {
-	my_log "tmux_default_command"
+	my_restore_log "tmux_default_command"
 	echo "$TMUX_DEFAULT_COMMAND"
 }
 
 pane_creation_command() {
-	my_log "pane_creation_command"
+	my_restore_log "pane_creation_command"
 	echo "cat '$(pane_contents_file "restore" "${1}:${2}.${3}")'; exec $(tmux_default_command)"
 }
 
 new_window() {
-	my_log "new_window"
+	my_restore_log "new_window"
 	local session_name="$1"
 	local window_number="$2"
 	local dir="$3"
@@ -199,7 +199,7 @@ new_pane() {
 }
 
 restore_pane() {
-	my_log restore_pane
+	my_restore_log restore_pane
 	local pane="$1"
 	while IFS=$d read line_type session_name window_number window_active window_flags pane_index pane_title dir pane_active pane_command pane_full_command; do
 		dir="$(remove_first_char "$dir")"
@@ -232,7 +232,7 @@ restore_pane() {
 }
 
 restore_state() {
-	my_log restore_state
+	my_restore_log restore_state
 	local state="$1"
 	echo "$state" |
 	while IFS=$d read line_type client_session client_last_session; do
@@ -242,7 +242,7 @@ restore_state() {
 }
 
 restore_grouped_session() {
-	my_log restore_grouped_session
+	my_restore_log restore_grouped_session
 	local grouped_session="$1"
 	echo "$grouped_session" |
 	while IFS=$d read line_type grouped_session original_session alternate_window active_window; do
@@ -251,7 +251,7 @@ restore_grouped_session() {
 }
 
 restore_active_and_alternate_windows_for_grouped_sessions() {
-	my_log restore_active_and_alternate_windows_for_grouped_sessions
+	my_restore_log restore_active_and_alternate_windows_for_grouped_sessions
 	local grouped_session="$1"
 	echo "$grouped_session" |
 	while IFS=$d read line_type grouped_session original_session alternate_window_index active_window_index; do
@@ -267,13 +267,13 @@ restore_active_and_alternate_windows_for_grouped_sessions() {
 }
 
 never_ever_overwrite() {
-	my_log never_ever_overwrite
+	my_restore_log never_ever_overwrite
 	local overwrite_option_value="$(get_tmux_option "$overwrite_option" "")"
 	[ -n "$overwrite_option_value" ]
 }
 
 detect_if_restoring_from_scratch() {
-	my_log detect_if_restoring_from_scratch
+	my_restore_log detect_if_restoring_from_scratch
 	if never_ever_overwrite; then
 		return
 	fi
@@ -284,7 +284,7 @@ detect_if_restoring_from_scratch() {
 }
 
 detect_if_restoring_pane_contents() {
-	my_log detect_if_restoring_pane_contents
+	my_restore_log detect_if_restoring_pane_contents
 	if capture_pane_contents_option_on; then
 		cache_tmux_default_command
 		restore_pane_contents_true
@@ -294,7 +294,7 @@ detect_if_restoring_pane_contents() {
 # functions called from main (ordered)
 
 restore_all_panes() {
-	my_log restore_all_panes
+	my_restore_log restore_all_panes
 	detect_if_restoring_from_scratch   # sets a global variable
 	detect_if_restoring_pane_contents  # sets a global variable
 	if is_restoring_pane_contents; then
@@ -308,7 +308,7 @@ restore_all_panes() {
 }
 
 handle_session_0() {
-	my_log handle_session_0
+	my_restore_log handle_session_0
 	if is_restoring_from_scratch && ! has_restored_session_0; then
 		local current_session="$(tmux display -p "#{client_session}")"
 		if [ "$current_session" == "0" ]; then
@@ -319,7 +319,7 @@ handle_session_0() {
 }
 
 restore_window_properties() {
-	my_log restore_window_properties
+	my_restore_log restore_window_properties
 	local window_name
 	\grep '^window' $(last_resurrect_file) |
 		while IFS=$d read line_type session_name window_number window_name window_active window_flags window_layout automatic_rename; do
@@ -339,7 +339,7 @@ restore_window_properties() {
 }
 
 restore_all_pane_processes() {
-	my_log restore_all_pane_processes
+	my_restore_log restore_all_pane_processes
 	if restore_pane_processes_enabled; then
 		local pane_full_command
 		awk 'BEGIN { FS="\t"; OFS="\t" } /^pane/ && $11 !~ "^:$" { print $2, $3, $6, $8, $11; }' $(last_resurrect_file) |
@@ -352,7 +352,7 @@ restore_all_pane_processes() {
 }
 
 restore_active_pane_for_each_window() {
-	my_log restore_active_pane_for_each_window
+	my_restore_log restore_active_pane_for_each_window
 	awk 'BEGIN { FS="\t"; OFS="\t" } /^pane/ && $9 == 1 { print $2, $3, $6; }' $(last_resurrect_file) |
 		while IFS=$d read session_name window_number active_pane; do
 			tmux switch-client -t "${session_name}:${window_number}"
@@ -361,7 +361,7 @@ restore_active_pane_for_each_window() {
 }
 
 restore_zoomed_windows() {
-	my_log restore_zoomed_windows
+	my_restore_log restore_zoomed_windows
 	awk 'BEGIN { FS="\t"; OFS="\t" } /^pane/ && $5 ~ /Z/ && $9 == 1 { print $2, $3; }' $(last_resurrect_file) |
 		while IFS=$d read session_name window_number; do
 			tmux resize-pane -t "${session_name}:${window_number}" -Z
@@ -369,7 +369,7 @@ restore_zoomed_windows() {
 }
 
 restore_grouped_sessions() {
-	my_log restore_grouped_sessions
+	my_restore_log restore_grouped_sessions
 	while read line; do
 		if is_line_type "grouped_session" "$line"; then
 			restore_grouped_session "$line"
@@ -379,7 +379,7 @@ restore_grouped_sessions() {
 }
 
 restore_active_and_alternate_windows() {
-	my_log restore_active_and_alternate_windows
+	my_restore_log restore_active_and_alternate_windows
 	awk 'BEGIN { FS="\t"; OFS="\t" } /^window/ && $6 ~ /[*-]/ { print $2, $5, $3; }' $(last_resurrect_file) |
 		sort -u |
 		while IFS=$d read session_name active_window window_number; do
@@ -388,7 +388,7 @@ restore_active_and_alternate_windows() {
 }
 
 restore_active_and_alternate_sessions() {
-	my_log restore_active_and_alternate_sessions
+	my_restore_log restore_active_and_alternate_sessions
 	while read line; do
 		if is_line_type "state" "$line"; then
 			restore_state "$line"
@@ -399,14 +399,14 @@ restore_active_and_alternate_sessions() {
 # A cleanup that happens after 'restore_all_panes' seems to fix fish shell
 # users' restore problems.
 cleanup_restored_pane_contents() {
-	my_log cleanup_restored_pane_contents
+	my_restore_log cleanup_restored_pane_contents
 	if is_restoring_pane_contents; then
 		rm "$(pane_contents_dir "restore")"/*
 	fi
 }
 
 main() {
-	my_log main
+	my_restore_log main
 	if supported_tmux_version_ok && check_saved_session_exists; then
 		start_spinner "Restoring..." "Tmux restore complete!"
 		execute_hook "pre-restore-all"
