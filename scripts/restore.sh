@@ -25,7 +25,7 @@ my_restore_log() {
 }
 
 is_line_type() {
-	my_restore_log is_line_type
+	my_restore_log "is_line_type [$1] [$2]"
 	local line_type="$1"
 	local line="$2"
 	echo "$line" |
@@ -42,7 +42,7 @@ check_saved_session_exists() {
 }
 
 pane_exists() {
-	my_restore_log pane_exists
+	my_restore_log "pane_exists [$1] [$2] [$3]"
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -51,7 +51,7 @@ pane_exists() {
 }
 
 register_existing_pane() {
-	my_restore_log register_existing_pane
+	my_restore_log "register_existing_pane [$1] [$2] [$3]"
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -61,7 +61,7 @@ register_existing_pane() {
 }
 
 is_pane_registered_as_existing() {
-	my_restore_log is_pane_registered_as_existing
+	my_restore_log "is_pane_registered_as_existing [$1] [$2] [$3]"
 	local session_name="$1"
 	local window_number="$2"
 	local pane_index="$3"
@@ -100,7 +100,7 @@ has_restored_session_0() {
 }
 
 window_exists() {
-	my_restore_log "window_exists"
+	my_restore_log "window_exists [$1] [$2]"
 	local session_name="$1"
 	local window_number="$2"
 	tmux list-windows -t "$session_name" -F "#{window_index}" 2>/dev/null |
@@ -108,7 +108,7 @@ window_exists() {
 }
 
 session_exists() {
-	my_restore_log "session_exists"
+	my_restore_log "session_exists [$1]"
 	local session_name="$1"
 	tmux has-session -t "$session_name" 2>/dev/null
 }
@@ -146,7 +146,7 @@ pane_creation_command() {
 }
 
 new_window() {
-	my_restore_log "new_window"
+	my_restore_log "new_window [$1] [$2]"
 	local session_name="$1"
 	local window_number="$2"
 	local dir="$3"
@@ -162,7 +162,7 @@ new_window() {
 }
 
 new_session() {
-	my_echo new_session
+	my_echo "new_session [$1] [$2] [$3] [$4]"
 	local session_name="$1"
 	local window_number="$2"
 	local dir="$3"
@@ -182,7 +182,7 @@ new_session() {
 }
 
 new_pane() {
-	my_echo new_pane
+	my_echo "new_pane [$1] [$2] [$3] [$4]"
 	local session_name="$1"
 	local window_number="$2"
 	local dir="$3"
@@ -199,7 +199,7 @@ new_pane() {
 }
 
 restore_pane() {
-	my_restore_log restore_pane
+	my_restore_log "restore_pane [$1]"
 	local pane="$1"
 	while IFS=$d read line_type session_name window_number window_active window_flags pane_index pane_title dir pane_active pane_command pane_full_command; do
 		dir="$(remove_first_char "$dir")"
@@ -232,7 +232,7 @@ restore_pane() {
 }
 
 restore_state() {
-	my_restore_log restore_state
+	my_restore_log "restore_state [$1]"
 	local state="$1"
 	echo "$state" |
 	while IFS=$d read line_type client_session client_last_session; do
@@ -242,7 +242,7 @@ restore_state() {
 }
 
 restore_grouped_session() {
-	my_restore_log restore_grouped_session
+	my_restore_log "restore_grouped_session [$1]"
 	local grouped_session="$1"
 	echo "$grouped_session" |
 	while IFS=$d read line_type grouped_session original_session alternate_window active_window; do
@@ -251,7 +251,7 @@ restore_grouped_session() {
 }
 
 restore_active_and_alternate_windows_for_grouped_sessions() {
-	my_restore_log restore_active_and_alternate_windows_for_grouped_sessions
+	my_restore_log "restore_active_and_alternate_windows_for_grouped_sessions [$1]"
 	local grouped_session="$1"
 	echo "$grouped_session" |
 	while IFS=$d read line_type grouped_session original_session alternate_window_index active_window_index; do

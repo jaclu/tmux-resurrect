@@ -17,7 +17,7 @@ my_helpers_log() {
 
 # helper functions
 get_tmux_option() {
-	my_helpers_log "get_tmux_option"
+	my_helpers_log "get_tmux_option  [$1] [$2]"
 	local option="$1"
 	local default_value="$2"
 	local option_value=$(tmux show-option -gqv "$option")
@@ -31,7 +31,7 @@ get_tmux_option() {
 # Ensures a message is displayed for 5 seconds in tmux prompt.
 # Does not override the 'display-time' tmux option.
 display_message() {
-	my_helpers_log "display_message $1"
+	my_helpers_log "display_message [$1] [$2]"
 	local message="$1"
 
 	# display_duration defaults to 5 seconds, if not passed as an argument
@@ -61,7 +61,7 @@ supported_tmux_version_ok() {
 }
 
 remove_first_char() {
-	my_helpers_log remove_first_char
+	my_helpers_log "remove_first_char [$1]"
 	echo "$1" | cut -c2-
 }
 
@@ -72,18 +72,18 @@ capture_pane_contents_option_on() {
 }
 
 files_differ() {
-	my_helpers_log files_differ
+	my_helpers_log "files_differ  [$1] [$2]"
 	! cmp -s "$1" "$2"
 }
 
 get_grouped_sessions() {
-	my_helpers_log get_grouped_sessions
+	my_helpers_log "get_grouped_sessions [$1]"
 	local grouped_sessions_dump="$1"
 	export GROUPED_SESSIONS="${d}$(echo "$grouped_sessions_dump" | cut -f2 -d"$d" | tr "\\n" "$d")"
 }
 
 is_session_grouped() {
-	my_helpers_log is_session_grouped
+	my_helpers_log "is_session_grouped ses_name=[$1]"
 	local session_name="$1"
 	[[ "$GROUPED_SESSIONS" == *"${d}${session_name}${d}"* ]]
 }
@@ -137,19 +137,19 @@ last_resurrect_file() {
 }
 
 pane_contents_dir() {
-	my_helpers_log pane_contents_dir
+	my_helpers_log "pane_contents_dir [$1]"
 	echo "$(resurrect_dir)/$1/pane_contents/"
 }
 
 pane_contents_file() {
-	my_helpers_log pane_contents_file
+	my_helpers_log "pane_contents_file [$1] [$2]"
 	local save_or_restore="$1"
 	local pane_id="$2"
 	echo "$(pane_contents_dir "$save_or_restore")/pane-${pane_id}"
 }
 
 pane_contents_file_exists() {
-	my_helpers_log pane_contents_file_exists
+	my_helpers_log "pane_contents_file_exists [$1]"
 	local pane_id="$1"
 	[ -f "$(pane_contents_file "restore" "$pane_id")" ]
 }
@@ -160,7 +160,7 @@ pane_contents_archive_file() {
 }
 
 execute_hook() {
-	my_helpers_log execute_hook
+	my_helpers_log "execute_hook [$1]"
 	local kind="$1"
 	shift
 	local args="" hook=""
