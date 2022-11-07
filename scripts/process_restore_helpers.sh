@@ -15,8 +15,8 @@ restore_pane_process() {
 	local dir="$5"
 	local command
 	if _process_should_be_restored "$pane_full_command" "$session_name" "$window_number" "$pane_index"; then
-		tmux switch-client -t "${session_name}:${window_number}"
-		tmux select-pane -t "$pane_index"
+		$TMUX_BIN switch-client -t "${session_name}:${window_number}"
+		$TMUX_BIN select-pane -t "$pane_index"
 
 		local inline_strategy="$(_get_inline_strategy "$pane_full_command")" # might not be defined
 		if [ -n "$inline_strategy" ]; then
@@ -35,7 +35,7 @@ restore_pane_process() {
 			# just invoke the raw command
 			command="$pane_full_command"
 		fi
-		tmux send-keys -t "${session_name}:${window_number}.${pane_index}" "$command" "C-m"
+		$TMUX_BIN send-keys -t "${session_name}:${window_number}.${pane_index}" "$command" "C-m"
 	fi
 }
 

@@ -82,16 +82,16 @@ state_format() {
 }
 
 dump_panes_raw() {
-	tmux list-panes -a -F "$(pane_format)"
+	$TMUX_BIN list-panes -a -F "$(pane_format)"
 }
 
 dump_windows_raw(){
-	tmux list-windows -a -F "$(window_format)"
+	$TMUX_BIN list-windows -a -F "$(window_format)"
 }
 
 toggle_window_zoom() {
 	local target="$1"
-	tmux resize-pane -Z -t "$target"
+	$TMUX_BIN resize-pane -Z -t "$target"
 }
 
 _save_command_strategy_file() {
@@ -114,7 +114,7 @@ pane_full_command() {
 
 number_nonempty_lines_on_screen() {
 	local pane_id="$1"
-	tmux capture-pane -pJ -t "$pane_id" |
+	$TMUX_BIN capture-pane -pJ -t "$pane_id" |
 		sed '/^$/d' |
 		wc -l |
 		sed 's/ //g'
@@ -123,8 +123,8 @@ number_nonempty_lines_on_screen() {
 # tests if there was any command output in the current pane
 pane_has_any_content() {
 	local pane_id="$1"
-	local history_size="$(tmux display -p -t "$pane_id" -F "#{history_size}")"
-	local cursor_y="$(tmux display -p -t "$pane_id" -F "#{cursor_y}")"
+	local history_size="$($TMUX_BIN display -p -t "$pane_id" -F "#{history_size}")"
+	local cursor_y="$($TMUX_BIN display -p -t "$pane_id" -F "#{cursor_y}")"
 	# doing "cheap" tests first
 	[ "$history_size" -gt 0 ] || # history has any content?
 		[ "$cursor_y" -gt 0 ] || # cursor not in first line?
@@ -140,26 +140,26 @@ capture_pane_contents() {
 			start_line="0"
 		fi
 		# the printf hack below removes *trailing* empty lines
-		printf '%s\n' "$(tmux capture-pane -epJ -S "$start_line" -t "$pane_id")" > "$(pane_contents_file "save" "$pane_id")"
+		printf '%s\n' "$($TMUX_BIN capture-pane -epJ -S "$start_line" -t "$pane_id")" > "$(pane_contents_file "save" "$pane_id")"
 	fi
 }
 
 get_active_window_index() {
 	local session_name="$1"
-	tmux list-windows -t "$session_name" -F "#{window_flags} #{window_index}" |
+	$TMUX_BIN list-windows -t "$session_name" -F "#{window_flags} #{window_index}" |
 		awk '$1 ~ /\*/ { print $2; }'
 }
 
 get_alternate_window_index() {
 	local session_name="$1"
-	tmux list-windows -t "$session_name" -F "#{window_flags} #{window_index}" |
+	$TMUX_BIN list-windows -t "$session_name" -F "#{window_flags} #{window_index}" |
 		awk '$1 ~ /-/ { print $2; }'
 }
 
 dump_grouped_sessions() {
 	local current_session_group=""
 	local original_session
-	tmux list-sessions -F "$(grouped_sessions_format)" |
+	$TMUX_BIN list-sessions -F "$(grouped_sessions_format)" |
 		grep "^1" |
 		cut -c 3- |
 		sort |
@@ -207,7 +207,7 @@ dump_windows() {
 			if is_session_grouped "$session_name"; then
 				continue
 			fi
-			automatic_rename="$(tmux show-window-options -vt "${session_name}:${window_index}" automatic-rename)"
+			automatic_rename="$($TMUX_BIN show-window-options -vt "${session_name}:${window_index}" automatic-rename)"
 			# If the option was unset, use ":" as a placeholder.
 			[ -z "${automatic_rename}" ] && automatic_rename=":"
 			echo "${line_type}${d}${session_name}${d}${window_index}${d}${window_name}${d}${window_active}${d}${window_flags}${d}${window_layout}${d}${automatic_rename}"
@@ -215,7 +215,7 @@ dump_windows() {
 }
 
 dump_state() {
-	tmux display-message -p "$(state_format)"
+	$TMUX_BIN display-message -p "$(state_format)"
 }
 
 dump_pane_contents() {

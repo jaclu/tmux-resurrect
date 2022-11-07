@@ -15,4 +15,4 @@ run_shell_command "rm ~/.tmux/resurrect/*"
 
 start_resurrect_save
 
-run_shell_command "tmux kill-server"
+run_shell_command "$TMUX_BIN kill-server"

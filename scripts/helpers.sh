@@ -14,6 +14,18 @@ _RESURRECT_FILE_PATH=""
 d=$'\t'
 
 
+
+#
+#  I use an env var TMUX_BIN to point at the used tmux, defined in my
+#  tmux.conf, in order to pick the version matching the server running,
+#  or when the tmux bin is in fact tmate :)
+#  If not found, it is set to whatever is in PATH, so should have no negative
+#  impact. In all calls to tmux I use $TMUX_BIN instead in the rest of this
+#  plugin.
+#
+[ -z "$TMUX_BIN" ] && TMUX_BIN="tmux"
+
+
 my_helpers_log() {
 	echo "scripts/helpers.$1" >> /tmp/resurrect.log
 }
@@ -24,7 +36,7 @@ get_tmux_option() {
 	my_helpers_log "get_tmux_option  [$1] [$2]"
 	local option="$1"
 	local default_value="$2"
-	local option_value=$(tmux show-option -gqv "$option")
+	local option_value=$($TMUX_BIN show-option -gqv "$option")
 	if [ -z "$option_value" ]; then
 		echo "$default_value"
 	else
@@ -49,13 +61,13 @@ display_message() {
 	local saved_display_time=$(get_tmux_option "display-time" "750")
 
 	# sets message display time to 5 seconds
-	tmux set-option -gq display-time "$display_duration"
+	$TMUX_BIN set-option -gq display-time "$display_duration"
 
 	# displays message
-	tmux display-message "$message"
+	$TMUX_BIN display-message "$message"
 
 	# restores original 'display-time' value
-	tmux set-option -gq display-time "$saved_display_time"
+	$TMUX_BIN set-option -gq display-time "$saved_display_time"
 }
 
 
