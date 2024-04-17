@@ -18,25 +18,27 @@ get_bind_note() {
     #
     if [[ "$(get_tmux_option "@use_bind_key_notes_in_plugins" "No")" = "Yes" ]] \
            && [[ "$vers_running" -ge 31 ]]; then
-        bind_note="-N plugin:tmux-resurrect"
-    else
-        bind_note=""
+        echo "-N plugin\ tmux-resurrect"
     fi
 }
 
 set_save_bindings() {
 	local key_bindings=$(get_tmux_option "$save_option" "$default_save_key")
 	local key
+	local bind_note="$(get_bind_note)"
 	for key in $key_bindings; do
-		$TMUX_BIN bind-key "$bind_note" "$key" run-shell "$CURRENT_DIR/scripts/save.sh"
+		[[ -n "$bind_note" ]] && bind_note="${bind_note}\ -\ save"
+		eval $TMUX_BIN bind-key "$bind_note" "$key" run-shell "$CURRENT_DIR/scripts/save.sh"
 	done
 }
 
 set_restore_bindings() {
 	local key_bindings=$(get_tmux_option "$restore_option" "$default_restore_key")
 	local key
+	local bind_note="$(get_bind_note)"
 	for key in $key_bindings; do
-		$TMUX_BIN bind-key "$bind_note" "$key" run-shell "$CURRENT_DIR/scripts/restore.sh"
+		[[ -n "$bind_note" ]] && bind_note="${bind_note}\ -\ restore"
+		eval $TMUX_BIN bind-key "$bind_note" "$key" run-shell "$CURRENT_DIR/scripts/restore.sh"
 	done
 }
 
@@ -51,7 +53,6 @@ set_script_path_options() {
 }
 
 main() {
-    get_bind_note
     set_save_bindings
     set_restore_bindings
     set_default_strategies
